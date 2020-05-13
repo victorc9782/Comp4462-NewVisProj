@@ -268,7 +268,7 @@ class Map extends Component {
           <td>
             <Switch
                 checked={this.state.ClientCaseClassificationFilterConfig.imported}
-                onChange={()=>{this.toggleFilter(selectedIndex, 'imported', true)}}
+                onChange={()=>{this.toggleFilter(selectedIndex, 'imported', this.state.ClientCaseClassificationFilterConfig.imported)}}
                 name="importedSwitch"
                 inputProps={{ 'aria-label': 'primary checkbox' }}
               />
