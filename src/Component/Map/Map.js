@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import {Add, LocalHospital, Healing, Close, FlightLand, People, PersonPin, CheckCircleOutline, CancelOutlined} from '@material-ui/icons';
 
+import { withStyles } from '@material-ui/core/styles';
 import ClientMarker from './ClientMarker'
 
 import CaseLocationJson from '../../Config/CaseLocation.json';
@@ -25,6 +26,13 @@ const options = [
 		'Client Status',
 		'Case Classification'
   ]
+
+const styles = {
+  listItemText: {
+    color: 'white',
+  },
+}
+  
 class Map extends Component {
   constructor(props) {
     super(props);
@@ -98,44 +106,44 @@ class Map extends Component {
       0 = ClientStatus, clientDetail.status = [discharged, hospitalised:(hospitalised/hospitalised_again), critical:(critical/serious), deceased]
       1 = Case Classification =[imported, local_close_contact, local_possibly, local_possibly_close_contact, local]
     */
-    if (filterNo == 0){
+    if (filterNo === 0){
       var config = this.state.ClientStatusFilterConfig
-      if (itemName == 'discharged'){
+      if (itemName === 'discharged'){
         config.discharged = !prevFlag
         this.setState({ClientStatusFilterConfig: config})
       }
-      else if (itemName == 'hospitalised'){
+      else if (itemName === 'hospitalised'){
         config.hospitalised = !prevFlag
         this.setState({ClientStatusFilterConfig: config})
       }
-      else if (itemName == 'critical'){
+      else if (itemName === 'critical'){
         config.critical = !prevFlag
         this.setState({ClientStatusFilterConfig: config})
       }
-      else if (itemName == 'deceased'){
+      else if (itemName === 'deceased'){
         config.deceased = !prevFlag
         this.setState({ClientStatusFilterConfig: config})
       }
     }
-    else if (filterNo == 1){
+    else if (filterNo === 1){
       var config = this.state.ClientCaseClassificationFilterConfig
-      if (itemName == 'imported'){
+      if (itemName === 'imported'){
         config.imported = !prevFlag
         this.setState({ClientCaseClassificationFilterConfig: config})
       }
-      else if (itemName == 'localCloseContact'){
+      else if (itemName === 'localCloseContact'){
         config.localCloseContact = !prevFlag
         this.setState({ClientCaseClassificationFilterConfig: config})
       }
-      else if (itemName == 'localPossibly'){
+      else if (itemName === 'localPossibly'){
         config.localPossibly = !prevFlag
         this.setState({ClientCaseClassificationFilterConfig: config})
       }
-      else if (itemName == 'localPossiblyCloseContact'){
+      else if (itemName === 'localPossiblyCloseContact'){
         config.localPossiblyCloseContact = !prevFlag
         this.setState({ClientCaseClassificationFilterConfig: config})
       }
-      else if (itemName == 'local'){
+      else if (itemName === 'local'){
         config.local = !prevFlag
         this.setState({ClientCaseClassificationFilterConfig: config})
       }
@@ -177,7 +185,7 @@ class Map extends Component {
     return null;
   }
   MapKey = ({selectedIndex}) => {
-	if (selectedIndex == 0){
+	if (selectedIndex === 0){
 		return(
 			<table>
         <tr>
@@ -251,7 +259,7 @@ class Map extends Component {
 			</table>
 		)
 	}
-	else if (selectedIndex == 1){
+	else if (selectedIndex === 1){
 		const confirmedColour = '#1c7800'
 		const possiblyColour = '#545454'
 		return(
@@ -350,7 +358,7 @@ class Map extends Component {
   getClientDetail = (case_no)=>{
     var detail = null
     this.state.CasesDetails.map(v=> {
-      if (v.case_no == case_no){
+      if (v.case_no === case_no){
         detail =  v
       }
     }
@@ -366,41 +374,41 @@ class Map extends Component {
     var count = 0;
     var DotList = this.state.CasesLocationDetails.map((data)=>{
       count++;
-      if ((data.action_en=="Residence" || data.action_en=="Accommodation") && data.case_no!=null){
+      if ((data.action_en==="Residence" || data.action_en==="Accommodation") && data.case_no!=null){
         console.log(data.case_no+": "+data.lat+", "+data.lng)
         var clientDetail = this.getClientDetail(data.case_no)
         var isGenerateComponment = false
         if (clientDetail!=null){
-          if (selectedIndex == 0){
+          if (selectedIndex === 0){
             let clientStatus = clientDetail.status
-            if(clientStatus == "discharged" && ClientStatusFilterConfig.discharged){
+            if(clientStatus === "discharged" && ClientStatusFilterConfig.discharged){
               isGenerateComponment = true
             }
-            else if ((clientStatus == "hospitalised" || clientStatus == "hospitalised_again") && ClientStatusFilterConfig.hospitalised ){
+            else if ((clientStatus === "hospitalised" || clientStatus === "hospitalised_again") && ClientStatusFilterConfig.hospitalised ){
               isGenerateComponment = true
             }
-            else if (clientStatus == "deceased" && ClientStatusFilterConfig.deceased){
+            else if (clientStatus === "deceased" && ClientStatusFilterConfig.deceased){
               isGenerateComponment = true
             }
-            else if ((clientStatus == "critical" || clientStatus == "serious") && ClientStatusFilterConfig.critical){
+            else if ((clientStatus === "critical" || clientStatus === "serious") && ClientStatusFilterConfig.critical){
               isGenerateComponment = true
             }
           }
-          else if (selectedIndex == 1){
+          else if (selectedIndex === 1){
             let clientClassification = clientDetail.classification
-            if(clientClassification == "imported"  && ClientCaseClassificationFilterConfig.imported){
+            if(clientClassification === "imported"  && ClientCaseClassificationFilterConfig.imported){
               isGenerateComponment = true
             }
-            else if (clientClassification == "local_close_contact" && ClientCaseClassificationFilterConfig.localCloseContact){
+            else if (clientClassification === "local_close_contact" && ClientCaseClassificationFilterConfig.localCloseContact){
               isGenerateComponment = true
             }
-            else if (clientClassification == "local_possibly" && ClientCaseClassificationFilterConfig.localPossibly){
+            else if (clientClassification === "local_possibly" && ClientCaseClassificationFilterConfig.localPossibly){
               isGenerateComponment = true
             }
-            else if (clientClassification == "local_possibly_close_contact" && ClientCaseClassificationFilterConfig.localPossiblyCloseContact){
+            else if (clientClassification === "local_possibly_close_contact" && ClientCaseClassificationFilterConfig.localPossiblyCloseContact){
               isGenerateComponment = true
             }
-            else if (clientClassification == "local" && ClientCaseClassificationFilterConfig.local){
+            else if (clientClassification === "local" && ClientCaseClassificationFilterConfig.local){
               isGenerateComponment = true
             }
           }
@@ -427,6 +435,7 @@ class Map extends Component {
     return DotList
   }
   render() {
+    const { classes } = this.props;
     const AnyReactComponent = this.AnyReactComponent
 	const {anchorEl, selectedIndex, clientInfobox, isShowMap} = this.state
     return (
@@ -447,17 +456,18 @@ class Map extends Component {
 		    </div>
         ):null}
 		
-		<Grid container style = {{flexGrow: 1}}spacing={1}>
+		<Grid container style = {{flexGrow: 1}} spacing={1}>
 			<Grid item xs={2} style={{width: 100}}>
-				<List component="nav" aria-label="Device settings">
+				<List component="nav" aria-label="Device settings" style={{color: '#ffffff'}}>
 					<ListItem
 					  button
 					  aria-haspopup="true"
 					  aria-controls="lock-menu"
 					  aria-label="when device is locked"
 					  onClick={this.handleClickListItem}
+            style={{color: '#ffffff'}}
 					>
-						<ListItemText primary="Filter by:" secondary={options[selectedIndex]} />
+						<ListItemText classes={{ primary: classes.listItemText, secondary: classes.listItemText }} primary="Filter by:" secondary={options[selectedIndex]} style={{color: '#ffffff'}}/>
 					</ListItem>
 				</List>
 				<Menu
@@ -469,7 +479,7 @@ class Map extends Component {
 					PaperProps={{
 					  style: {
 						maxHeight: 100,
-						width: '20ch',
+						width: '20ch',           
 					  },
 					}}
 				>
@@ -478,6 +488,9 @@ class Map extends Component {
 						key={option}
 						selected={index === selectedIndex}
 						onClick={(event) => this.handleMenuItemClick(event, index)}
+            style={
+              {color: '#ffffff'}
+            }
 					  >
 						{option}
 					  </MenuItem>
@@ -487,7 +500,7 @@ class Map extends Component {
 			<Grid item xs={2}>
 			  <this.MapKey selectedIndex = {selectedIndex}/>
 			</Grid>
-			<Grid item xs={1}>
+			<Grid item xs={1} alignItems="center" style={{paddingTop: 15}}>
         {clientInfobox.case_no}
 			</Grid>
 			<Grid item xs={7}>
@@ -583,4 +596,4 @@ class Map extends Component {
   }
 }
 
-export default Map;
+export default  withStyles(styles)(Map);

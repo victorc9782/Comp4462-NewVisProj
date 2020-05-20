@@ -9,35 +9,35 @@ const possiblyColour = '#545454'
  function ClientMarkByClassification({clientClassification}){
 	 console.log("clientClassification: "+clientClassification)
 	 if (clientClassification!=null){
-      if(clientClassification == "imported"){
+      if(clientClassification === "imported"){
         return(
         <IconButton style={{ padding: '1px',backgroundColor: confirmedColour}}>
           <FlightLand style={{fontSize: 16}}/>
         </IconButton>
         )
       }
-	  else if (clientClassification == "local_close_contact"){
+	  else if (clientClassification === "local_close_contact"){
         return(
         <IconButton style={{ padding: '1px',backgroundColor: confirmedColour}}>
           <People style={{fontSize: 16}}/>
         </IconButton>
         )
       }
-      else if (clientClassification == "local_possibly"){
+      else if (clientClassification === "local_possibly"){
         return (
 		<IconButton style={{ padding: '1px',backgroundColor: possiblyColour}}>
 		  <PersonPin style={{fontSize: 16}}/>
 		</IconButton>
         )
       }
-      else if (clientClassification == "local_possibly_close_contact"){
+      else if (clientClassification === "local_possibly_close_contact"){
         return (
 		<IconButton style={{ padding: '1px',backgroundColor: possiblyColour}}>
 		  <People style={{fontSize: 16}}/>
 		</IconButton>
         )
       }
-      else if (clientClassification == "local"){
+      else if (clientClassification === "local"){
         return (
 		<IconButton style={{ padding: '1px',backgroundColor: confirmedColour}}>
 		  <People style={{fontSize: 16}}/>
@@ -48,28 +48,28 @@ const possiblyColour = '#545454'
 	  return null
  }
  function ClientMarkByStatus({clientStatus, ClientStatusFilterConfig}){
-      if(clientStatus == "discharged" && ClientStatusFilterConfig.discharged){
+      if(clientStatus === "discharged" && ClientStatusFilterConfig.discharged){
         return(
           <IconButton style={{ padding: '1px',backgroundColor: '#00ff00'}}>
             <Healing style={{fontSize: 16}}/>
           </IconButton>
         )
       }
-      else if ((clientStatus == "hospitalised" || clientStatus == "hospitalised_again") && ClientStatusFilterConfig.hospitalised ){
+      else if ((clientStatus === "hospitalised" || clientStatus === "hospitalised_again") && ClientStatusFilterConfig.hospitalised ){
         return(
           <IconButton style={{ padding: '1px',backgroundColor: '#ff7575'}}>
             <LocalHospital style={{fontSize: 16}}/>
           </IconButton>
         )
       }
-      else if (clientStatus == "deceased" && ClientStatusFilterConfig.deceased){
+      else if (clientStatus === "deceased" && ClientStatusFilterConfig.deceased){
         return (
           <IconButton style={{ padding: '1px',backgroundColor: '#545454'}}>
             <Close style={{fontSize: 16}}/>
           </IconButton>
         )
       }
-      else if ((clientStatus == "critical" || clientStatus == "serious") && ClientStatusFilterConfig.critical){
+      else if ((clientStatus === "critical" || clientStatus === "serious") && ClientStatusFilterConfig.critical){
         return (
           <IconButton style={{ padding: '1px',backgroundColor: '#ff0000'}}>
             <LocalHospital style={{fontSize: 16}}/>
@@ -79,10 +79,10 @@ const possiblyColour = '#545454'
       return null
  }
  function ClientMarker({generatedBy, clientStatus, clientClassification, ClientStatusFilterConfig}){
-    if (generatedBy == 0){
+    if (generatedBy === 0){
         return <ClientMarkByStatus clientStatus ={ clientStatus} ClientStatusFilterConfig={ClientStatusFilterConfig}/>
     }
-	else if (generatedBy == 1){
+	else if (generatedBy === 1){
 		return <ClientMarkByClassification clientClassification={clientClassification} />
 	}
     return(

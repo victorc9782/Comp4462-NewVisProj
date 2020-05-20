@@ -1,0 +1,9 @@
+.container{
+    background-color: #202020;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+}
+
+.item{
+    height: 100vh;
+}

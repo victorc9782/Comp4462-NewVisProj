@@ -10,3 +10,26 @@
     user-select: none;
     transform: translate(-50%, -50%);
   }
+
+.info{
+    padding: 15px;
+    color: #ffffff;
+    box-shadow: inset 0 0 10px #000000;
+}
+
+.MuiGrid-root, .MuiGrid-item, .MuiPaper-root, .MuiList-root, .MuiMenu-list, .MuiButtonBase-root, .MuiListItem-root, .MuiMenuItem-root, .MuiListItem-button{
+    background-color: #202020;
+    color: #ffffff;
+}
+
+.MuiButtonBase-root, .MuiListItem-root, .MuiMenuItem-root, .Mui-selected, .MuiMenuItem-gutters, .MuiListItem-gutters,.MuiListItem-button,.Mui-selected, .MuiTypography-root, .MuiListItemText-secondary, .MuiTypography-body2, .MuiTypography-colorTextSecondary, .MuiTypography-displayBlock {
+  color: #ffffff;
+}
+
+.MuiGrid-root .MuiGrid-item{
+  padding-top: 12.5px;
+}
+
+.MuiTypography-colorTextSecondary {
+  color: #fff;
+}
