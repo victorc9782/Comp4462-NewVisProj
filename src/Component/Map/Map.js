@@ -3,17 +3,17 @@ import GoogleMapReact from 'google-map-react';
 import {Switch} from '@material-ui/core';
 
 import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import Typography from '@material-ui/core/Typography';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import IconButton from '@material-ui/core/IconButton';
 import {Add, LocalHospital, Healing, Close, FlightLand, People, PersonPin, CheckCircleOutline, CancelOutlined} from '@material-ui/icons';
+import { faMars, faVenus } from '@fortawesome/free-solid-svg-icons'
 
 import { withStyles } from '@material-ui/core/styles';
 import ClientMarker from './ClientMarker'
@@ -46,15 +46,28 @@ class Map extends Component {
       discharged: false, //Set Default as false to enhance prefomance 
       hospitalised: true,
       critical: true,
-      deceased: true
+      deceased: true,
     },
+	ClientStatusFilterCount:{
+	  dischargedCount: 0,
+	  hospitalisedCount: 0,
+	  criticalCount: 0,
+	  deceasedCount: 0
+	},
     ClientCaseClassificationFilterConfig:{
       imported: false, //Set Default as false to enhance prefomance 
       localCloseContact: true,
       localPossibly: true,
       localPossiblyCloseContact: true,
-      local: true
+      local: true,
     },
+	ClientCaseClassificationFilterCount:{
+	  importedCount: 0,
+	  localCloseContactCount:0,
+	  localPossiblyCount: 0,
+	  localPossiblyCloseContactCount: 0,
+	  localCount:0
+	},
     clientInfobox: {
       case_no: 0,
       confirmation_date: "N/A",
@@ -69,11 +82,57 @@ class Map extends Component {
     };
   }
   componentWillMount(){
-    console.log("componentWillMount()")
     let CasesDetails = []
+    var newClientStatusFilterCount = {
+      dischargedCount: 0,
+      hospitalisedCount: 0,
+      criticalCount: 0,
+      deceasedCount: 0
+    }
+    var newClientCaseClassificationFilterCount = {
+      importedCount: 0,
+      localCloseContactCount:0,
+      localPossiblyCount: 0,
+      localPossiblyCloseContactCount: 0,
+      localCount:0
+    }
     CasesDetailsJson.map((data)=>{
       CasesDetails.push(data)
+      if (data.case_no!=null){
+        var clientDetail = this.getClientDetail(data.case_no)
+        var clientStatus = data.status
+        var  clientClassification = data.classification
+        if(clientStatus === "discharged" ){
+          newClientStatusFilterCount.dischargedCount = newClientStatusFilterCount.dischargedCount+1
+        }
+        else if ((clientStatus === "hospitalised" || clientStatus === "hospitalised_again")){
+          newClientStatusFilterCount.hospitalisedCount=newClientStatusFilterCount.hospitalisedCount+1
+        }
+        else if (clientStatus === "deceased"){
+          newClientStatusFilterCount.deceasedCount=newClientStatusFilterCount.deceasedCount+1
+        }
+        else if ((clientStatus === "critical" || clientStatus === "serious")){
+          newClientStatusFilterCount.criticalCount++
+        }
+
+        if(clientClassification === "imported"){
+          newClientCaseClassificationFilterCount.importedCount++
+        }
+        else if (clientClassification === "local_close_contact"){
+          newClientCaseClassificationFilterCount.localCloseContactCount++
+        }
+        else if (clientClassification === "local_possibly"){
+          newClientCaseClassificationFilterCount.localPossiblyCount++
+        }
+        else if (clientClassification === "local_possibly_close_contact"){
+          newClientCaseClassificationFilterCount.localPossiblyCloseContactCount++
+        }
+        else if (clientClassification === "local"){
+          newClientCaseClassificationFilterCount.localCount++
+        }
+      }
     })
+    this.setState({ClientStatusFilterCount: newClientStatusFilterCount, ClientCaseClassificationFilterCount: newClientCaseClassificationFilterCount})
     let CasesLocationDetails = []
     CaseLocationJson.map((data)=>{
       CasesLocationDetails.push(data)
@@ -110,43 +169,36 @@ class Map extends Component {
       var config = this.state.ClientStatusFilterConfig
       if (itemName === 'discharged'){
         config.discharged = !prevFlag
-        this.setState({ClientStatusFilterConfig: config})
       }
       else if (itemName === 'hospitalised'){
         config.hospitalised = !prevFlag
-        this.setState({ClientStatusFilterConfig: config})
       }
       else if (itemName === 'critical'){
         config.critical = !prevFlag
-        this.setState({ClientStatusFilterConfig: config})
       }
       else if (itemName === 'deceased'){
         config.deceased = !prevFlag
-        this.setState({ClientStatusFilterConfig: config})
       }
+      this.setState({ClientStatusFilterConfig: config})
     }
     else if (filterNo === 1){
       var config = this.state.ClientCaseClassificationFilterConfig
       if (itemName === 'imported'){
         config.imported = !prevFlag
-        this.setState({ClientCaseClassificationFilterConfig: config})
       }
       else if (itemName === 'localCloseContact'){
         config.localCloseContact = !prevFlag
-        this.setState({ClientCaseClassificationFilterConfig: config})
       }
       else if (itemName === 'localPossibly'){
         config.localPossibly = !prevFlag
-        this.setState({ClientCaseClassificationFilterConfig: config})
       }
       else if (itemName === 'localPossiblyCloseContact'){
         config.localPossiblyCloseContact = !prevFlag
-        this.setState({ClientCaseClassificationFilterConfig: config})
       }
       else if (itemName === 'local'){
         config.local = !prevFlag
-        this.setState({ClientCaseClassificationFilterConfig: config})
       }
+      this.setState({ClientCaseClassificationFilterConfig: config})
     }
   }
   toggleShowMap(){
@@ -170,8 +222,6 @@ class Map extends Component {
 	const {filterType, selectedIndex, ClientStatusFilterConfig, ClientCaseClassificationFilterConfig} = this.state
     var markerColour='#ffffff';
     if (clientDetail!=null){
-
-      //console.log(data.case_no+": "+ clientStatus+", "+markerColour)
       if (clientDetail.status!=null){
       return(
         <div>
@@ -186,6 +236,7 @@ class Map extends Component {
   }
   MapKey = ({selectedIndex}) => {
 	if (selectedIndex === 0){
+    const {ClientStatusFilterCount} = this.state
 		return(
 			<table>
         <tr>
@@ -204,6 +255,9 @@ class Map extends Component {
                 inputProps={{ 'aria-label': 'primary checkbox' }}
               />
           </td>
+          <td>
+            {ClientStatusFilterCount.dischargedCount}
+          </td>
         </tr>
         <tr>
           <td>
@@ -220,6 +274,9 @@ class Map extends Component {
                 onChange={()=>this.toggleFilter(selectedIndex, 'hospitalised', this.state.ClientStatusFilterConfig.hospitalised)}
                 inputProps={{ 'aria-label': 'primary checkbox' }}
               />
+          </td>
+          <td>
+            {ClientStatusFilterCount.hospitalisedCount}
           </td>
         </tr>
         <tr>
@@ -238,6 +295,9 @@ class Map extends Component {
                 inputProps={{ 'aria-label': 'primary checkbox' }}
               />
           </td>
+          <td>
+            {ClientStatusFilterCount.criticalCount}
+          </td>
         </tr>
         <tr>
           <td>
@@ -255,6 +315,9 @@ class Map extends Component {
                 inputProps={{ 'aria-label': 'primary checkbox' }}
               />
           </td>
+          <td>
+            {ClientStatusFilterCount.deceasedCount}
+          </td>
         </tr>
 			</table>
 		)
@@ -262,6 +325,7 @@ class Map extends Component {
 	else if (selectedIndex === 1){
 		const confirmedColour = '#1c7800'
 		const possiblyColour = '#545454'
+    const {ClientCaseClassificationFilterCount} = this.state
 		return(
 			<table>
         <tr>
@@ -281,6 +345,9 @@ class Map extends Component {
                 inputProps={{ 'aria-label': 'primary checkbox' }}
               />
           </td>
+          <td>
+            {ClientCaseClassificationFilterCount.importedCount}
+          </td>
         </tr>
         <tr>
           <td>
@@ -297,6 +364,9 @@ class Map extends Component {
               onChange={()=>this.toggleFilter(selectedIndex, 'local', this.state.ClientCaseClassificationFilterConfig.local)}
               inputProps={{ 'aria-label': 'primary checkbox' }}
             />
+          </td>
+          <td>
+            {ClientCaseClassificationFilterCount.localCount}
           </td>
         </tr>
         <tr>
@@ -315,6 +385,9 @@ class Map extends Component {
               inputProps={{ 'aria-label': 'primary checkbox' }}
             />
           </td>
+          <td>
+            {ClientCaseClassificationFilterCount.localCloseContactCount}
+          </td>
         </tr>
         <tr>
           <td>
@@ -331,6 +404,9 @@ class Map extends Component {
               onChange={()=>this.toggleFilter(selectedIndex, 'localPossibly', this.state.ClientCaseClassificationFilterConfig.localPossibly)}
               inputProps={{ 'aria-label': 'primary checkbox' }}
             />
+          </td>
+          <td>
+            {ClientCaseClassificationFilterCount.localPossiblyCount}
           </td>
         </tr>
         <tr>
@@ -349,6 +425,9 @@ class Map extends Component {
               inputProps={{ 'aria-label': 'primary checkbox' }}
             />
           </td>
+          <td>
+            {ClientCaseClassificationFilterCount.localPossiblyCloseContactCount}
+          </td>
         </tr>
 			</table>
 		)
@@ -364,22 +443,20 @@ class Map extends Component {
     }
     )
     return detail
-    //console.log(caseDetail);
-    //return caseDetail.status
   }
   List = () =>{
     const AnyReactComponent = this.AnyReactComponent
     const {selectedIndex, ClientStatusFilterConfig, ClientCaseClassificationFilterConfig} = this.state
-    console.log("Client List: ")
     var count = 0;
     var DotList = this.state.CasesLocationDetails.map((data)=>{
       count++;
       if ((data.action_en==="Residence" || data.action_en==="Accommodation") && data.case_no!=null){
-        console.log(data.case_no+": "+data.lat+", "+data.lng)
+        //console.log(data.case_no+": "+data.lat+", "+data.lng)
         var clientDetail = this.getClientDetail(data.case_no)
         var isGenerateComponment = false
         if (clientDetail!=null){
           if (selectedIndex === 0){
+            var count = this.state.ClientStatusFilterCount
             let clientStatus = clientDetail.status
             if(clientStatus === "discharged" && ClientStatusFilterConfig.discharged){
               isGenerateComponment = true
@@ -395,6 +472,7 @@ class Map extends Component {
             }
           }
           else if (selectedIndex === 1){
+            var count = this.state.ClientCaseClassificationFilterCount
             let clientClassification = clientDetail.classification
             if(clientClassification === "imported"  && ClientCaseClassificationFilterConfig.imported){
               isGenerateComponment = true
@@ -431,7 +509,6 @@ class Map extends Component {
       }
       
     })
-    console.log("count: "+count)
     return DotList
   }
   render() {
@@ -442,7 +519,7 @@ class Map extends Component {
       // Important! Always set the container height explicitly
       <div >
         {isShowMap?(
-          <div style={{ height: '80vh', width: '100%' }}>
+          <div style={{ height: '75vh', width: '100%' }}>
               <GoogleMapReact
                 bootstrapURLKeys={{ key: 'AIzaSyAd5lEr3jOvC2knuxINRDIznu6xWEVsfcw' }}
                 defaultCenter={this.props.center}
@@ -457,7 +534,7 @@ class Map extends Component {
         ):null}
 		
 		<Grid container style = {{flexGrow: 1}} spacing={1}>
-			<Grid item xs={2} style={{width: 100}}>
+			<Grid item xs={2} >
 				<List component="nav" aria-label="Device settings" style={{color: '#ffffff'}}>
 					<ListItem
 					  button
@@ -496,12 +573,13 @@ class Map extends Component {
 					  </MenuItem>
 					))}
 				</Menu>
+        Data By: 2nd May,2020 00:00:00(HKT)
 			</Grid>
 			<Grid item xs={2}>
 			  <this.MapKey selectedIndex = {selectedIndex}/>
 			</Grid>
 			<Grid item xs={1} alignItems="center" style={{paddingTop: 15}}>
-        {clientInfobox.case_no}
+				<Button variant="outlined" color="primary">#{clientInfobox.case_no}</Button>
 			</Grid>
 			<Grid item xs={7}>
         <Grid container item xs={12} spacing={1}> 
@@ -509,12 +587,13 @@ class Map extends Component {
             Gender: 
           </Grid>
           <Grid item xs={4}>
-            {clientInfobox.gender}
+                {clientInfobox.gender=="M"?"Male":clientInfobox.gender=="F"?"Female":clientInfobox.gender}
+                {clientInfobox.gender=="M"?<FontAwesomeIcon icon={faMars} color="blue"/>:clientInfobox.gender=="F"?<FontAwesomeIcon icon={faVenus} color="red"/>:null}
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             Age: 
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             {clientInfobox.age}
           </Grid>
         </Grid>
@@ -525,10 +604,10 @@ class Map extends Component {
           <Grid item xs={4}>
             {clientInfobox.hospital_en}
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             Confirmation Date:
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             {clientInfobox.confirmation_date}
           </Grid>
         </Grid>
@@ -539,10 +618,10 @@ class Map extends Component {
           <Grid item xs={4}>
             {clientInfobox.status_en}
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             Client Type: 
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             {clientInfobox.type_en}
           </Grid>
         </Grid>
@@ -553,44 +632,20 @@ class Map extends Component {
           <Grid item xs={4}>
             {clientInfobox.classification_en}
           </Grid>
+          <Grid item xs={3}>
+            Show Map:
+          </Grid>
+          <Grid item xs={3}>
+			<Switch
+				checked={this.state.isShowMap}
+				onChange={()=> this.toggleShowMap()}
+				name="ShowMap"
+				inputProps={{ 'aria-label': 'secondary checkbox' }}
+			  />
+          </Grid>
         </Grid>
-        {/*
-      <Fragment>
-              <tr>
-                <td>{clientInfobox.case_no}</td>
-              </tr>
-              <tr>
-                <td>Confirmation Date:</td>
-                <td>{clientInfobox.confirmation_date}</td>
-                <td>Gender: </td>
-                <td>{clientInfobox.gender}</td>
-              </tr>
-              <tr>
-                <td>Age: </td>
-                <td>{clientInfobox.age}</td>
-                <td>Hospital: </td>
-                <td>{clientInfobox.hospital_en}</td>
-              </tr>
-              <tr>
-                <td>Status: </td>
-                <td>{clientInfobox.status_en}</td>
-                <td>Client Type: </td>
-                <td>{clientInfobox.type_en}</td>
-              </tr>
-              <tr>
-                <td>Classification: </td>
-                <td>{clientInfobox.classification_en}</td>
-              </tr>
-          </Fragment>
-  */}
 			</Grid>
 		</Grid>
-        <Switch
-            checked={this.state.isShowMap}
-            onChange={()=> this.toggleShowMap()}
-            name="ShowMap"
-            inputProps={{ 'aria-label': 'secondary checkbox' }}
-          />
       </div>
     );
   }
